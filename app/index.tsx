@@ -3,11 +3,11 @@ import { Button, Text, type TextProps, View } from "react-native";
 import Animated, {
 	Easing,
 	useAnimatedStyle,
+	withDelay,
 	withTiming,
 } from "react-native-reanimated";
 
 const numbersToNice = [...Array(10).keys()];
-const _lineHeight = 1.2;
 
 const Digit = ({
   children,
@@ -16,17 +16,16 @@ const Digit = ({
   ...rest
 }: TextProps & { fontSize: number }) => {
   return (
-    <View style={{height: fontSize, borderWidth: 1}}>
+    <View style={{ height: fontSize }}>
       <Text
         {...rest}
         style={[
           style,
           {
-						flex: 1,
+            flex: 1,
             fontSize: fontSize,
             lineHeight: fontSize * 1.0,
             fontVariant: ["tabular-nums"],
-            backgroundColor: "red",
             textAlign: "center",
             fontWeight: "900",
           },
@@ -51,10 +50,13 @@ const DigitList = ({
     return {
       transform: [
         {
-          translateY: withTiming(-value * fontSize * 1, {
-            duration: 400,
-            easing: Easing.out(Easing.quad),
-          }),
+          translateY: withDelay(
+            index * 200,
+            withTiming(-value * fontSize, {
+              duration: 600,
+              easing: Easing.out(Easing.quad),
+            })
+          ),
         },
       ],
     };
@@ -84,7 +86,6 @@ const CustomAnimatedPrice = ({
 
   return (
     <View>
-      <Text>old fontsize: {fontSize} </Text>
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
         {digits.map((digit, index) => {
           if (!Number.isNaN(parseInt(digit, 10))) {
@@ -109,15 +110,21 @@ const CustomAnimatedPrice = ({
 };
 
 export default function Index() {
-  const [number, setNumber] = useState(988885);
+  const [number, setNumber] = useState(2000);
 
   const onClick = () => {
-    setNumber(Math.floor(Math.random() * 10000));
+		if(number === 2000) {
+    setNumber(3278);
+
+		} else {
+
+    setNumber(2000);
+		}
   };
 
-  const intlNumber = new Intl.NumberFormat("en-US", {
+  const intlNumber = new Intl.NumberFormat("fr-FR", {
     style: "currency",
-    currency: "USD",
+    currency: "EUR",
     maximumFractionDigits: 0,
   }).format(number);
 
@@ -133,7 +140,7 @@ export default function Index() {
       <Text style={{ fontSize: 20, marginBottom: 20 }}>
         Animated Price: {intlNumber}
       </Text>
-      <CustomAnimatedPrice number={intlNumber} fontSize={100} />
+      <CustomAnimatedPrice number={intlNumber} fontSize={30} />
       <Button title="Increase" onPress={onClick} />
     </View>
   );
